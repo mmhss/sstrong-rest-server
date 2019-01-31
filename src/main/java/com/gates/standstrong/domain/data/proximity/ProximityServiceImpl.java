@@ -13,12 +13,15 @@ public class ProximityServiceImpl extends BaseServiceImpl<Proximity> implements 
 
     @Inject
     public ProximityServiceImpl(ProximityRepository proximityRepository) {
+
         super(proximityRepository);
+        this.proximityRepository = proximityRepository;
+
     }
 
 
     @Override
-    public List<Object[]> getProximityChart(String identificationNumber) {
+    public List<ProximityChart> getProximityChart(String identificationNumber) {
         return proximityRepository.getProximityChart(identificationNumber);
     }
 }
