@@ -19,11 +19,13 @@ public class ProximityResource extends BaseResource<Proximity, ProximityDto> {
     @Inject
     public ProximityResource(ProximityService proximityService, ProximityMapper proximityMapper) {
         super(proximityService, proximityMapper, Proximity.class, QProximity.proximity);
+        this.proximityService = proximityService;
     }
 
     @GetMapping({"/proximitychart"})
-    public  List<Object[]> getProximityChart(){
-        List<Object[]> result = proximityService.getProximityChart("SS3012");
+    public List<ProximityChart> getProximityChart(){
+
+        List<ProximityChart> result = proximityService.getProximityChart("SS1001");
 
         return result;
 
