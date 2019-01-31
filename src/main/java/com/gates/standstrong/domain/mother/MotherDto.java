@@ -8,6 +8,10 @@ public class MotherDto extends BaseDto {
 
     private String identificationNumber;
 
+    private String firstName;
+    private String middleName;
+    private String lastName;
+
     private String status;
 
     private BaseDto project;
