@@ -6,7 +6,7 @@ import com.gates.standstrong.domain.mother.Mother;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class Audio extends BaseEntity {
 
     @Column(name="capture_date")
-    private LocalDate captureDate;
+    private LocalDateTime captureDate;
 
     @Column
     private String type;
