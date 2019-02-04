@@ -16,7 +16,6 @@ public class GpsDto extends BaseDto {
     private double longitude;
     private double altitude;
     private double accuracy;
-    private Long motherId;
+    private BaseDto mother;
 
 }
-
