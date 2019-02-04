@@ -1,7 +1,6 @@
 package com.gates.standstrong.domain.data.audio;
 
 import com.gates.standstrong.base.BaseEntity;
-import com.gates.standstrong.domain.data.importfile.ImportFile;
 import com.gates.standstrong.domain.mother.Mother;
 import lombok.Data;
 
@@ -16,12 +15,11 @@ public class Audio extends BaseEntity {
     @Column(name="capture_date")
     private LocalDateTime captureDate;
 
-    @Column
-    private String type;
+    @Column(name="audio_type")
+    private String audioType;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "import_file_id")
-    private ImportFile importFile;
+    @Column
+    private String filename;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "mother_id")

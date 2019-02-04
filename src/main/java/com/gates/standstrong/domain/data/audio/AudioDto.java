@@ -12,8 +12,8 @@ public class AudioDto extends BaseDto {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime captureDate;
-    private String type;
-    private BaseDto importFile;
+    private String audioType;
+    private String filename;
     private BaseDto mother;
 
 }
