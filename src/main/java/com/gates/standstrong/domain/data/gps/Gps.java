@@ -1,4 +1,4 @@
-package com.gates.standstrong.domain.data.Gps;
+package com.gates.standstrong.domain.data.gps;
 
 import com.gates.standstrong.base.BaseEntity;
 import lombok.Data;
@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 @Table(name="gps")
 public class Gps extends BaseEntity {
 
+    @Column(name="capture_date")
+    private LocalDateTime captureDate;
 
     @Column(name="longitude")
     private double longitude;
@@ -25,10 +27,8 @@ public class Gps extends BaseEntity {
     @Column(name="accuracy")
     private double accuracy;
 
-    @Column(name="recorded_date_time")
-    private LocalDateTime recordedDateTime;
-
     @ManyToOne(optional = false)
     @JoinColumn(name = "mother_id")
     private Mother mother;
+
 }
