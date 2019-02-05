@@ -24,10 +24,10 @@ public class ProximityResource extends BaseResource<Proximity, ProximityDto> {
         this.proximityService = proximityService;
     }
 
-    @GetMapping("/proximitychart/mother/{id}")
-    public List<ProximityChart> getProximityChart(@PathVariable Long id){
+    @GetMapping("/proximity-chart/{motherId}")
+    public List<ProximityChart> getProximityChart(@PathVariable Long motherId){
 
-        List<ProximityChart> result = proximityService.getProximityChart(id);
+        List<ProximityChart> result = proximityService.getProximityChart(motherId);
 
         return result;
 

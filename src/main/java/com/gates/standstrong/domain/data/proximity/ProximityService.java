@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface ProximityService extends BaseService<Proximity> {
 
-    List<ProximityChart> getProximityChart(Long id);
+    List<ProximityChart> getProximityChart(Long motherId);
 
 }
