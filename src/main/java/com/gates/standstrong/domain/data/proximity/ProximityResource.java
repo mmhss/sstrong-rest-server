@@ -2,11 +2,13 @@ package com.gates.standstrong.domain.data.proximity;
 
 import com.gates.standstrong.base.BaseResource;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = BaseResource.BASE_URL + ProximityResource.RESOURCE_URL)
@@ -22,10 +24,10 @@ public class ProximityResource extends BaseResource<Proximity, ProximityDto> {
         this.proximityService = proximityService;
     }
 
-    @GetMapping({"/proximitychart"})
-    public List<ProximityChart> getProximityChart(){
+    @GetMapping("/proximity-chart/{motherId}")
+    public List<ProximityChart> getProximityChart(@PathVariable Long motherId){
 
-        List<ProximityChart> result = proximityService.getProximityChart("SS1001");
+        List<ProximityChart> result = proximityService.getProximityChart(motherId);
 
         return result;
 
