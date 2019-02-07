@@ -19,6 +19,9 @@ public class Audio extends BaseEntity {
     private String audioType;
 
     @Column
+    private Double accuracy;
+
+    @Column
     private String filename;
 
     @ManyToOne(optional = false)
