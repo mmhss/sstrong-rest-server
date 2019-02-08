@@ -43,7 +43,7 @@ interface ProximityRepository extends BaseRepository<Proximity> {
             " INNER JOIN mother on proximity.mother_id = mother.id" +
             " WHERE proximity.id > :pId" +
             " AND event='Monitor' AND value=1" +
-            " GROUP BY chartDay, chartHour, chartEvent, chartValue" +
+            " GROUP BY chartDay, chartHour, chartEvent, chartValue, motherId" +
             " UNION " +
             " SELECT proximity.id as proximityId" +
             ", DATE(capture_date) AS chartDay" +
@@ -56,6 +56,6 @@ interface ProximityRepository extends BaseRepository<Proximity> {
             " WHERE proximity.id > :pId" +
             " AND event='Visibility' AND value=1" +
             " GROUP BY chartDay, chartHour, chartEvent, chartValue, motherId" +
-            " ORDER  BY chartDay, chartHour, chartEvent motherId;", nativeQuery = true)
+            " ORDER  BY chartDay, chartHour, chartEvent, motherId;", nativeQuery = true)
     List<ProximityChart> getProximityCharts(@Param("pId") Long proximitySyncId);
 }
