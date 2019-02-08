@@ -8,4 +8,5 @@ public interface ProximityService extends BaseService<Proximity> {
 
     List<ProximityChart> getProximityChart(Long motherId);
 
+    List<ProximityChart> getProximityCharts(Long proximityId);
 }
