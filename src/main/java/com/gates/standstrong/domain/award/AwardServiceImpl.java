@@ -30,7 +30,7 @@ public class AwardServiceImpl extends BaseServiceImpl<Award> implements AwardSer
 
     @Override
     public boolean hasHighestAward(Mother mother, String awardType) {
-        if(this.getTopAward(mother.getId(), awardType)!=null && this.getTopAward(mother.getId(), awardType).getAwardLevel() == 3 ){
+        if(this.getTopAward(mother.getId(), awardType)!=null && this.getTopAward(mother.getId(), awardType).getAwardLevel() == AwardConstants.AWARD_LEVEL_THREE ){
             return true;
         }
         return false;
