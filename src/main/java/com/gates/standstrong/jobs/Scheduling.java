@@ -35,8 +35,6 @@ public class Scheduling {
 
     private ProximityService proximityService;
 
-//    private AwardExecutionService awardExecutionService;
-
     @Inject
     public Scheduling(MotherService motherService, AudioService audioService, AwardService awardService, ActivityService activityService, ProximityService proximityService) {
         this.motherService = motherService;
@@ -46,8 +44,7 @@ public class Scheduling {
         this.proximityService = proximityService;
     }
 
-//    @Scheduled(cron="0 8 * * * *")
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(cron="0 8 * * * *")
     public void run(){
 
         log.info("Running social security award job");
@@ -323,27 +320,4 @@ public class Scheduling {
 
 
     }
-
-//    private List<Date> getCaptureDatesToProcess(Mother mother) {
-//        log.info("Generating social support award for mom %s", mother.getIdentificationNumber());
-//
-//        List<Date> capturedDates = audioService.getAudioCapturedDates(mother.getId());
-//        List<Date> ranForCapturedDates = awardExecutionService.getRanForCaptureDates("SocialSupport", mother.getId());
-//        List<Date> awardForCaptureDates = new ArrayList<>();
-//
-//        for(Date captureDate: capturedDates){
-//            boolean found = false;
-//            for(Date ranForCaptureDate:ranForCapturedDates ){
-//               if(captureDate.equals(ranForCaptureDate)){
-//                   found=true;
-//                   break;
-//               }
-//            }
-//
-//            if(found==false){
-//                awardForCaptureDates.add(captureDate);
-//            }
-//        }
-//        return awardForCaptureDates;
-//    }
 }
