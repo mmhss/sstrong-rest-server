@@ -12,5 +12,5 @@ public interface AudioService  extends BaseService<Audio> {
 
     Long getTalkCount(Long motherId, Date awardForDate);
 
-    List<Speech> getSpeechCount(Long motherId);
+    List<Speech> getSpeeches(Long motherId);
 }
