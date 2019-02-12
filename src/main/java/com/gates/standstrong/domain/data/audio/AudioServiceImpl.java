@@ -30,7 +30,7 @@ public class AudioServiceImpl extends BaseServiceImpl<Audio> implements AudioSer
     }
 
     @Override
-    public List<Speech> getSpeechCount(Long motherId){
+    public List<Speech> getSpeeches(Long motherId){
         return audioRepository.getSpeechCount(motherId);
     }
 }
