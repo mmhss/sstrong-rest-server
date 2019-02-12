@@ -3,7 +3,8 @@ package com.gates.standstrong.jobs;
 import com.gates.standstrong.domain.award.Award;
 import com.gates.standstrong.domain.award.AwardConstants;
 import com.gates.standstrong.domain.award.AwardService;
-import com.gates.standstrong.domain.awardexecution.AwardExecutionService;
+import com.gates.standstrong.domain.data.activity.ActivityService;
+import com.gates.standstrong.domain.data.activity.Movement;
 import com.gates.standstrong.domain.data.audio.AudioService;
 import com.gates.standstrong.domain.data.audio.Speech;
 import com.gates.standstrong.domain.mother.Mother;
@@ -26,18 +27,106 @@ public class Scheduling {
 
     private AwardService awardService;
 
+    private ActivityService activityService;
+
 //    private AwardExecutionService awardExecutionService;
 
     @Inject
-    public Scheduling(MotherService motherService, AudioService audioService,  AwardService awardService, AwardExecutionService awardExecutionService){
+    public Scheduling(MotherService motherService, AudioService audioService, AwardService awardService, ActivityService activtiyService) {
         this.motherService = motherService;
         this.audioService = audioService;
         this.awardService = awardService;
+        this.activityService = activtiyService;
     }
 
-//    @Scheduled(cron="0 8 * * * *")
-    @Scheduled(fixedDelay = 10000)
-    public void generateSocialSecurityAwards(){
+    @Scheduled(cron="0 8 * * * *")
+    public void run(){
+
+        log.info("Running social security award job");
+        generateSocialSecurityAwards();
+
+        log.info("Running movement award job");
+        generateMovementAwards();
+
+    }
+
+    private void generateMovementAwards() {
+
+        for(Mother mother:motherService.findAll()){
+
+            if (awardService.hasHighestAward(mother, AwardConstants.AWARD_MOVEMENT)) {
+                log.info("Movement Awards for mom {} already reached to level 3", mother.getIdentificationNumber());
+                continue;
+            }
+
+            Award awardDb = awardService.getTopAward(mother.getId(), AwardConstants.AWARD_MOVEMENT);
+
+            List<Award> awards = new ArrayList<>();
+
+            log.info("Generating Movement Awards for mom {}", mother.getIdentificationNumber());
+            List<Movement> movements = activityService.getMovements(mother.getId());
+
+            int consecutiveValue = 0;
+            for(Movement movement: movements){
+                log.info("Capture Day: {} ", movement.getCaptureDate().toString());
+                log.info("Number of movement that day: {} ", movement.getMovementCount());
+
+                if(movement.getMovementCount()>=1 && consecutiveValue ==0 ){
+
+                    log.info("Movement Level 1 award achieved.");
+
+                    if(awardDb==null){
+                        Award award = new Award();
+                        award.setAwardLevel(1);
+                        award.setAwardForDate(movement.getCaptureDate().toLocalDate());
+                        award.setAwardType(AwardConstants.AWARD_MOVEMENT);
+                        award.setMother(mother);
+                        awards.add(award);
+                        awardService.save(award);
+                    }
+                    consecutiveValue =1;
+                    continue;
+                }
+
+                if(movement.getMovementCount()>=2 && consecutiveValue ==1 ){
+
+                    log.info("Movement Level 2 award achieved.");
+                    if(awardDb!=null && awardDb.getAwardLevel()==1) {
+                        Award award = new Award();
+                        award.setAwardLevel(2);
+                        award.setAwardForDate(movement.getCaptureDate().toLocalDate());
+                        award.setAwardType(AwardConstants.AWARD_MOVEMENT);
+                        award.setMother(mother);
+                        awards.add(award);
+                        awardService.save(award);
+                    }
+                    consecutiveValue =2;
+                    continue;
+                }
+
+                if(movement.getMovementCount()>=3 && consecutiveValue ==2 ){
+
+                    log.info("Movement Level 3 award achieved.");
+                    if(awardDb!=null && awardDb.getAwardLevel()==2) {
+                        Award award = new Award();
+                        award.setAwardLevel(3);
+                        award.setAwardForDate(movement.getCaptureDate().toLocalDate());
+                        award.setAwardType(AwardConstants.AWARD_MOVEMENT);
+                        award.setMother(mother);
+                        awards.add(award);
+                        awardService.save(award);
+                    }
+                    break;
+                }
+
+                consecutiveValue=0;
+
+            }
+        }
+    }
+
+
+    private void generateSocialSecurityAwards(){
 
         for(Mother mother:motherService.findAll()){
 
@@ -51,16 +140,16 @@ public class Scheduling {
             List<Award> awards = new ArrayList<>();
 
             log.info("Generating Social Support Awards for mom {}", mother.getIdentificationNumber());
-            List<Speech> speechCounts = audioService.getSpeechCount(mother.getId());
+            List<Speech> speeches = audioService.getSpeeches(mother.getId());
 
             int consecutiveValue = 0;
-            for(Speech speech: speechCounts){
+            for(Speech speech: speeches){
                 log.info("Capture Day: {} ", speech.getCaptureDate().toString());
-                log.info("Number of talk that day: {} ", speech.getSpeechCount());
+                log.info("Number of speech that day: {} ", speech.getSpeechCount());
 
                 if(speech.getSpeechCount()>=2 && consecutiveValue ==0 ){
 
-                    log.info("Social Support Level 1 achieved.");
+                    log.info("Social Support Level 1 award achieved.");
 
                     if(awardDb==null){
                         Award award = new Award();
@@ -77,7 +166,7 @@ public class Scheduling {
 
                 if(speech.getSpeechCount()>=4 && consecutiveValue ==1 ){
 
-                    log.info("Social Support Level 2 achieved.");
+                    log.info("Social Support Level 2 award achieved.");
                     if(awardDb!=null && awardDb.getAwardLevel()==1) {
                         Award award = new Award();
                         award.setAwardLevel(2);
@@ -93,7 +182,7 @@ public class Scheduling {
 
                 if(speech.getSpeechCount()>=6 && consecutiveValue ==2 ){
 
-                    log.info("Social Support Level 3 achieved.");
+                    log.info("Social Support Level 3 award achieved.");
                     if(awardDb!=null && awardDb.getAwardLevel()==2) {
                         Award award = new Award();
                         award.setAwardLevel(3);
