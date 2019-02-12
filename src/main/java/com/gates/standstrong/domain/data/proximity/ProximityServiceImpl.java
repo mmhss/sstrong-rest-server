@@ -29,4 +29,9 @@ public class ProximityServiceImpl extends BaseServiceImpl<Proximity> implements 
     public List<ProximityChart> getProximityCharts(Long proximitySyncId) {
         return proximityRepository.getProximityCharts(proximitySyncId);
     }
+
+    @Override
+    public List<SelfCare> getSelfCaredDays(Long motherId) {
+        return proximityRepository.getSelfCaredDays(motherId);
+    }
 }

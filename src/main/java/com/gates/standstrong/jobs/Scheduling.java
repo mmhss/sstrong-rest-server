@@ -7,13 +7,17 @@ import com.gates.standstrong.domain.data.activity.ActivityService;
 import com.gates.standstrong.domain.data.activity.Movement;
 import com.gates.standstrong.domain.data.audio.AudioService;
 import com.gates.standstrong.domain.data.audio.Speech;
+import com.gates.standstrong.domain.data.proximity.ProximityService;
+import com.gates.standstrong.domain.data.proximity.SelfCare;
 import com.gates.standstrong.domain.mother.Mother;
 import com.gates.standstrong.domain.mother.MotherService;
+import com.gates.standstrong.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,17 +33,21 @@ public class Scheduling {
 
     private ActivityService activityService;
 
+    private ProximityService proximityService;
+
 //    private AwardExecutionService awardExecutionService;
 
     @Inject
-    public Scheduling(MotherService motherService, AudioService audioService, AwardService awardService, ActivityService activtiyService) {
+    public Scheduling(MotherService motherService, AudioService audioService, AwardService awardService, ActivityService activityService, ProximityService proximityService) {
         this.motherService = motherService;
         this.audioService = audioService;
         this.awardService = awardService;
-        this.activityService = activtiyService;
+        this.activityService = activityService;
+        this.proximityService = proximityService;
     }
 
-    @Scheduled(cron="0 8 * * * *")
+//    @Scheduled(cron="0 8 * * * *")
+    @Scheduled(fixedDelay = 10000)
     public void run(){
 
         log.info("Running social security award job");
@@ -48,6 +56,95 @@ public class Scheduling {
         log.info("Running movement award job");
         generateMovementAwards();
 
+        log.info("Running Self Care award job");
+        generateSelfCareAwards();
+
+    }
+
+    private void generateSelfCareAwards() {
+
+        for(Mother mother:motherService.findAll()){
+
+            if (awardService.hasHighestAward(mother, AwardConstants.AWARD_SELF_CARE)) {
+                log.info("Self Care Awards for mom {} already reached to level 3", mother.getIdentificationNumber());
+                continue;
+            }
+
+            Award awardDb = awardService.getTopAward(mother.getId(), AwardConstants.AWARD_SELF_CARE);
+
+            List<Award> awards = new ArrayList<>();
+
+            log.info("Generating Self Care Awards for mom {}", mother.getIdentificationNumber());
+            List<SelfCare> selfCaredDays = proximityService.getSelfCaredDays(mother.getId());
+
+            int consecutiveValue = 0;
+            Date previousDay=null;
+            for(SelfCare selfCare: selfCaredDays){
+                log.info("Capture Day: {} ", selfCare.getChartDay().toString());
+
+                if( consecutiveValue == 0 ){
+
+                    log.info("Self Care Level 1 award achieved.");
+
+                    if(awardDb==null){
+                        Award award = new Award();
+                        award.setAwardLevel(1);
+                        award.setAwardForDate(selfCare.getChartDay().toLocalDate());
+                        award.setAwardType(AwardConstants.AWARD_SELF_CARE);
+                        award.setMother(mother);
+                        awards.add(award);
+                        awardService.save(award);
+
+                        log.info("Saved");
+                    }
+                    previousDay = selfCare.getChartDay();
+                    consecutiveValue =1;
+                    continue;
+                }
+
+                if(previousDay!=null && DateUtils.addDays(previousDay, 1).equals(selfCare.getChartDay()) && consecutiveValue == 1 ){
+
+                    log.info("Self Care Level 2 award achieved.");
+                    if(awardDb!=null && awardDb.getAwardLevel()==1) {
+                        Award award = new Award();
+                        award.setAwardLevel(2);
+                        award.setAwardForDate(selfCare.getChartDay().toLocalDate());
+                        award.setAwardType(AwardConstants.AWARD_SELF_CARE);
+                        award.setMother(mother);
+                        awards.add(award);
+                        awardService.save(award);
+
+                        log.info("Saved");
+
+                    }
+                    previousDay = selfCare.getChartDay();
+                    consecutiveValue =2;
+                    continue;
+                }
+
+                if(previousDay!=null && DateUtils.addDays(previousDay, 1).equals(selfCare.getChartDay())){
+
+                    log.info("Self Care Level 3 award achieved.");
+                    if(awardDb!=null && awardDb.getAwardLevel()==2) {
+                        Award award = new Award();
+                        award.setAwardLevel(3);
+                        award.setAwardForDate(selfCare.getChartDay().toLocalDate());
+                        award.setAwardType(AwardConstants.AWARD_SELF_CARE);
+                        award.setMother(mother);
+                        awards.add(award);
+                        awardService.save(award);
+
+                        log.info("Saved");
+
+                    }
+                    break;
+                }
+
+                previousDay=null;
+                consecutiveValue=0;
+
+            }
+        }
     }
 
     private void generateMovementAwards() {
@@ -67,6 +164,8 @@ public class Scheduling {
             List<Movement> movements = activityService.getMovements(mother.getId());
 
             int consecutiveValue = 0;
+            Date previousDay = null;
+
             for(Movement movement: movements){
                 log.info("Capture Day: {} ", movement.getCaptureDate().toString());
                 log.info("Number of movement that day: {} ", movement.getMovementCount());
@@ -83,12 +182,16 @@ public class Scheduling {
                         award.setMother(mother);
                         awards.add(award);
                         awardService.save(award);
+
+                        log.info("Saved");
+
                     }
+                    previousDay = movement.getCaptureDate();
                     consecutiveValue =1;
                     continue;
                 }
 
-                if(movement.getMovementCount()>=2 && consecutiveValue ==1 ){
+                if(previousDay!=null && DateUtils.addDays(previousDay, 1).equals(movement.getCaptureDate()) && movement.getMovementCount()>=2 && consecutiveValue ==1 ){
 
                     log.info("Movement Level 2 award achieved.");
                     if(awardDb!=null && awardDb.getAwardLevel()==1) {
@@ -99,12 +202,16 @@ public class Scheduling {
                         award.setMother(mother);
                         awards.add(award);
                         awardService.save(award);
+
+                        log.info("Saved");
+
                     }
+                    previousDay = movement.getCaptureDate();
                     consecutiveValue =2;
                     continue;
                 }
 
-                if(movement.getMovementCount()>=3 && consecutiveValue ==2 ){
+                if(previousDay!=null && DateUtils.addDays(previousDay, 1).equals(movement.getCaptureDate()) && movement.getMovementCount()>=3 && consecutiveValue ==2 ){
 
                     log.info("Movement Level 3 award achieved.");
                     if(awardDb!=null && awardDb.getAwardLevel()==2) {
@@ -115,10 +222,13 @@ public class Scheduling {
                         award.setMother(mother);
                         awards.add(award);
                         awardService.save(award);
+
+                        log.info("Saved");
+
                     }
                     break;
                 }
-
+                previousDay = null;
                 consecutiveValue=0;
 
             }
@@ -143,6 +253,7 @@ public class Scheduling {
             List<Speech> speeches = audioService.getSpeeches(mother.getId());
 
             int consecutiveValue = 0;
+            Date previousDay = null;
             for(Speech speech: speeches){
                 log.info("Capture Day: {} ", speech.getCaptureDate().toString());
                 log.info("Number of speech that day: {} ", speech.getSpeechCount());
@@ -159,12 +270,16 @@ public class Scheduling {
                         award.setMother(mother);
                         awards.add(award);
                         awardService.save(award);
+
+                        log.info("Saved");
+
                     }
+                    previousDay = speech.getCaptureDate();
                     consecutiveValue =1;
                     continue;
                 }
 
-                if(speech.getSpeechCount()>=4 && consecutiveValue ==1 ){
+                if(previousDay!=null && DateUtils.addDays(previousDay, 1).equals(speech.getCaptureDate()) && speech.getSpeechCount()>=4 && consecutiveValue ==1 ){
 
                     log.info("Social Support Level 2 award achieved.");
                     if(awardDb!=null && awardDb.getAwardLevel()==1) {
@@ -175,12 +290,16 @@ public class Scheduling {
                         award.setMother(mother);
                         awards.add(award);
                         awardService.save(award);
+
+                        log.info("Saved");
+
                     }
+                    previousDay = speech.getCaptureDate();
                     consecutiveValue =2;
                     continue;
                 }
 
-                if(speech.getSpeechCount()>=6 && consecutiveValue ==2 ){
+                if(previousDay!=null && DateUtils.addDays(previousDay, 1).equals(speech.getCaptureDate()) && speech.getSpeechCount()>=6 && consecutiveValue ==2 ){
 
                     log.info("Social Support Level 3 award achieved.");
                     if(awardDb!=null && awardDb.getAwardLevel()==2) {
@@ -191,12 +310,14 @@ public class Scheduling {
                         award.setMother(mother);
                         awards.add(award);
                         awardService.save(award);
+
+                        log.info("Saved");
+
                     }
                     break;
                 }
-
+                previousDay = null;
                 consecutiveValue=0;
-
             }
         }
 
