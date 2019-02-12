@@ -4,7 +4,8 @@ import java.sql.Date;
 
 public interface Speech {
 
-    public Date getCaptureDate();
-    public int getSpeechCount();
+    Date getCaptureDate();
+
+    int getSpeechCount();
 
 }
