@@ -58,4 +58,31 @@ interface ProximityRepository extends BaseRepository<Proximity> {
             " GROUP BY chartDay, chartHour, chartEvent, chartValue, motherId" +
             " ORDER  BY chartDay, chartHour, chartEvent, motherId;", nativeQuery = true)
     List<ProximityChart> getProximityCharts(@Param("pId") Long proximitySyncId);
+
+    @Query(value="SELECT DISTINCT t1.chartDay AS chartDay, count(t1.chartDay) AS hourCount" +
+            " FROM (" +
+            " SELECT DATE(capture_date) AS chartDay" +
+            ", HOUR(capture_date) AS chartHour" +
+            ", event AS chartEvent" +
+            ", value AS chartValue" +
+            " FROM proximity" +
+            " INNER JOIN mother ON proximity.mother_id = mother.id" +
+            " WHERE mother.id = :motherId" +
+            " AND event='Visibility' AND value=0" +
+            " GROUP BY chartDay, chartHour, chartEvent, chartValue) AS t1" +
+            " LEFT JOIN " +
+            " (SELECT DATE(capture_date) AS chartDay" +
+            ", HOUR(capture_date) AS chartHour" +
+            ", event AS chartEvent" +
+            ", value AS chartValue" +
+            " FROM proximity" +
+            " INNER JOIN mother ON proximity.mother_id = mother.id" +
+            " WHERE mother.id = :motherId" +
+            " AND event='Visibility' AND value=1" +
+            " GROUP BY chartDay, chartHour, chartEvent, chartValue) AS t2" +
+            " ON t1.chartDay = t2.chartDay AND t1.chartHour = t2.chartHour" +
+            " WHERE t2.chartHour IS NULL" +
+            " GROUP BY t1.chartDay" +
+            " ORDER BY t1.chartDay ASC", nativeQuery = true)
+    List<SelfCare> getSelfCaredDays(@Param("motherId") Long motherId);
 }
