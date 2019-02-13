@@ -24,6 +24,13 @@ public class AwardServiceImpl extends BaseServiceImpl<Award> implements AwardSer
     }
 
     @Override
+    public boolean satisfiesNextBonusLevel(Long motherId, int nextBonusLevel) {
+        int result = awardRepository.satisfiesNextBonusLevel(motherId, nextBonusLevel);
+
+        return result == 1 ? true : false;
+    }
+
+    @Override
     public Award getTopAward(Long motherId, String awardType) {
         return awardRepository.getTopAward(motherId, awardType);
     }
@@ -34,5 +41,10 @@ public class AwardServiceImpl extends BaseServiceImpl<Award> implements AwardSer
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Award getAnyAward(Long motherId, int level) {
+        return awardRepository.getAnyAward(motherId, level);
     }
 }
