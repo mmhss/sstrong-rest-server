@@ -47,15 +47,64 @@ public class Scheduling {
     @Scheduled(cron="0 8 * * * *")
     public void run(){
 
-        log.info("Running social security award job");
+        log.info("Running social security award");
         generateSocialSecurityAwards();
 
-        log.info("Running movement award job");
+        log.info("Running movement award");
         generateMovementAwards();
 
-        log.info("Running Self Care award job");
+        log.info("Running Self Care award");
         generateSelfCareAwards();
 
+        log.info("Running Bonus award");
+        generateBonusAwards();
+
+
+    }
+
+    private void generateBonusAwards() {
+
+        for(Mother mother:motherService.findAll()) {
+
+            if (awardService.hasHighestAward(mother, AwardConstants.AWARD_BONUS)) {
+                log.info("Bonus Awards for mom {} already reached to level 3", mother.getIdentificationNumber());
+                continue;
+            }
+
+            log.info("Generating Bonus Awards for mom {}", mother.getIdentificationNumber());
+
+
+            Award awardDb = awardService.getTopAward(mother.getId(), AwardConstants.AWARD_BONUS);
+            int nextBonusLevel = 1;
+
+            if (awardDb != null) {
+                nextBonusLevel = awardDb.getAwardLevel() + 1;
+            }
+
+            while (nextBonusLevel != 3) {
+
+                if (awardService.satisfiesNextBonusLevel(mother.getId(), nextBonusLevel)) {
+
+                    Award anyAward = awardService.getAnyAward(mother.getId(), nextBonusLevel);
+
+                    log.info("Bonus Award Level {} award achieved.", nextBonusLevel);
+
+                    Award award = new Award();
+                    award.setAwardLevel(nextBonusLevel);
+                    award.setAwardType(AwardConstants.AWARD_BONUS);
+                    award.setMother(mother);
+                    award.setAwardForDate(anyAward.getAwardForDate());
+                    awardService.save(award);
+
+                    log.info("Saved");
+
+                    nextBonusLevel++;
+
+                } else {
+                    break;
+                }
+            }
+        }
     }
 
     private void generateSelfCareAwards() {
