@@ -33,30 +33,47 @@ interface ProximityRepository extends BaseRepository<Proximity> {
     List<ProximityChart> getProximityChart(@Param("motherId") Long motherId);
 
 
-    @Query(value="SELECT proximity.id as proximityId" +
-            ", DATE(capture_date) AS chartDay" +
-            ", HOUR(capture_date) as chartHour" +
-            ", event as chartEvent" +
-            ", value as chartValue" +
-            ", mother.id as motherId" +
-            " FROM proximity " +
-            " INNER JOIN mother on proximity.mother_id = mother.id" +
+
+    @Query(value = "SELECT t1.proximityId, t1.chartDay, t1.chartHour, t1.chartEvent, t1.chartValue, t1.motherId" +
+            " From " +
+            " ( SELECT proximity.id as proximityId" +
+            "       , DATE(capture_date) AS chartDay" +
+            "       , HOUR(capture_date) as chartHour" +
+            "       , event as chartEvent" +
+            "       , value as chartValue" +
+            "       , mother.id as motherId" +
+            "       FROM proximity" +
+            "       INNER JOIN mother on proximity.mother_id = mother.id" +
+            "       WHERE proximity.id > :pId" +
+            "       AND event='Visibility' AND value=0" +
+            "       GROUP BY chartDay, chartHour, mother_id) AS t1" +
+            " LEFT JOIN" +
+            " ( SELECT proximity.id as proximityId" +
+            "       , DATE(capture_date) AS chartDay" +
+            "       , HOUR(capture_date) as chartHour" +
+            "       , event as chartEvent" +
+            "       , value as chartValue" +
+            "       , mother.id as motherId" +
+            "       FROM proximity" +
+            "       INNER JOIN mother on proximity.mother_id = mother.id" +
+            "       WHERE proximity.id > :pId" +
+            "       AND event='Visibility' AND value=1" +
+            "       GROUP BY chartDay, chartHour, mother_id) as t2" +
+            "  ON t1.chartDay = t2.chartDay and t1.chartHour = t2.chartHour" +
+            "  WHERE t2.chartHour IS NULL" +
+            "  UNION" +
+            "  SELECT proximity.id as proximityId" +
+            "       , DATE(capture_date) AS chartDay" +
+            "       , HOUR(capture_date) as chartHour" +
+            "       , event as chartEvent" +
+            "       , value as chartValue" +
+            "       , mother_id as motherId" +
+            "  FROM proximity" +
+            "  INNER JOIN mother ON proximity.mother_id = mother.id" +
             " WHERE proximity.id > :pId" +
-            " AND event='Monitor' AND value=1" +
-            " GROUP BY chartDay, chartHour, chartEvent, chartValue, motherId" +
-            " UNION " +
-            " SELECT proximity.id as proximityId" +
-            ", DATE(capture_date) AS chartDay" +
-            ", HOUR(capture_date) as chartHour" +
-            ", event as chartEvent" +
-            ", value as chartValue " +
-            ", mother.id as motherId" +
-            " FROM proximity" +
-            " INNER JOIN mother on proximity.mother_id = mother.id" +
-            " WHERE proximity.id > :pId" +
-            " AND event='Visibility' AND value=1" +
-            " GROUP BY chartDay, chartHour, chartEvent, chartValue, motherId" +
-            " ORDER  BY chartDay, chartHour, chartEvent, motherId;", nativeQuery = true)
+            "       AND event='Visibility' AND value=1" +
+            "  GROUP BY chartDay, chartHour, mother_id" +
+            "  ORDER BY proximityId asc", nativeQuery = true)
     List<ProximityChart> getProximityCharts(@Param("pId") Long proximitySyncId);
 
     @Query(value="SELECT DISTINCT t1.chartDay AS chartDay, count(t1.chartDay) AS hourCount" +
