@@ -5,6 +5,7 @@ import com.gates.standstrong.domain.mother.Mother;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -37,7 +38,7 @@ public class AwardServiceImpl extends BaseServiceImpl<Award> implements AwardSer
 
     @Override
     public boolean hasHighestAward(Mother mother, String awardType) {
-        if(this.getTopAward(mother.getId(), awardType)!=null && this.getTopAward(mother.getId(), awardType).getAwardLevel() == AwardConstants.AWARD_LEVEL_THREE ){
+        if (this.getTopAward(mother.getId(), awardType) != null && this.getTopAward(mother.getId(), awardType).getAwardLevel() == AwardConstants.AWARD_LEVEL_THREE) {
             return true;
         }
         return false;
@@ -47,4 +48,17 @@ public class AwardServiceImpl extends BaseServiceImpl<Award> implements AwardSer
     public Award getAnyAward(Long motherId, int level) {
         return awardRepository.getAnyAward(motherId, level);
     }
+
+    @Override
+    public Award buildAward(Mother mother, String awardType, int awardLevel, LocalDate awardForDate) {
+
+        Award award = new Award();
+        award.setAwardLevel(awardLevel);
+        award.setAwardForDate(awardForDate);
+        award.setAwardType(awardType);
+        award.setMother(mother);
+
+        return award;
+    }
+
 }
