@@ -4,6 +4,7 @@ import com.gates.standstrong.base.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.sql.Date;
 import java.util.List;
 
 @Service
@@ -34,4 +35,16 @@ public class ProximityServiceImpl extends BaseServiceImpl<Proximity> implements 
     public List<SelfCare> getSelfCaredDays(Long motherId) {
         return proximityRepository.getSelfCaredDays(motherId);
     }
+
+    @Override
+    public List<ProximityChart> getProximityChartsByMother(Long motherId) {
+        return proximityRepository.getProximityChartsByMother(motherId);
+    }
+
+    @Override
+    public List<Date> getDates(Long motherId) {
+        return proximityRepository.getDates(motherId);
+    }
+
+
 }
