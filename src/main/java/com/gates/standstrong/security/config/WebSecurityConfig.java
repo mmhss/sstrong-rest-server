@@ -1,8 +1,8 @@
 package com.gates.standstrong.security.config;
 
-import com.gates.standstrong.domain.security.jwt.JwtAuthEntryPoint;
-import com.gates.standstrong.domain.security.jwt.JwtAuthTokenFilter;
-import com.gates.standstrong.domain.security.services.UserDetailsServiceImpl;
+import com.gates.standstrong.security.jwt.JwtAuthEntryPoint;
+import com.gates.standstrong.security.jwt.JwtAuthTokenFilter;
+import com.gates.standstrong.security.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.gates.standstrong.domain.security;
+package com.gates.standstrong.security.model;
 
 public enum  RoleName {
     ROLE_USER,

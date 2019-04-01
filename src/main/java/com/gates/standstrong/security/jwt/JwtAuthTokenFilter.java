@@ -1,6 +1,6 @@
-package com.gates.standstrong.domain.security.jwt;
+package com.gates.standstrong.security.jwt;
 
-import com.gates.standstrong.domain.security.services.UserDetailsServiceImpl;
+import com.gates.standstrong.security.services.UserDetailsServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
