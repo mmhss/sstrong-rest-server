@@ -1,4 +1,4 @@
-package com.gates.standstrong.domain.security;
+package com.gates.standstrong.security.model;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

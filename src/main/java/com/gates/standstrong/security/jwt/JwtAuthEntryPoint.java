@@ -1,4 +1,4 @@
-package com.gates.standstrong.domain.security.jwt;
+package com.gates.standstrong.security.jwt;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

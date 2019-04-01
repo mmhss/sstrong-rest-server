@@ -1,7 +1,7 @@
-package com.gates.standstrong.domain.security.services;
+package com.gates.standstrong.security.services;
 
-import com.gates.standstrong.domain.security.User;
-import com.gates.standstrong.domain.security.UserRepository;
+import com.gates.standstrong.security.model.User;
+import com.gates.standstrong.security.model.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
