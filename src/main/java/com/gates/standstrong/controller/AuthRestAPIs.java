@@ -2,9 +2,9 @@ package com.gates.standstrong.controller;
 
 import com.gates.standstrong.domain.security.*;
 import com.gates.standstrong.domain.security.jwt.JwtProvider;
-import com.gates.standstrong.message.request.LoginForm;
-import com.gates.standstrong.message.request.SignUpForm;
-import com.gates.standstrong.message.response.JwtResponse;
+import com.gates.standstrong.security.message.request.LoginForm;
+import com.gates.standstrong.security.message.request.SignUpForm;
+import com.gates.standstrong.security.message.response.JwtResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

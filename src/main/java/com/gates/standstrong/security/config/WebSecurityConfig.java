@@ -1,4 +1,4 @@
-package com.gates.standstrong.config;
+package com.gates.standstrong.security.config;
 
 import com.gates.standstrong.domain.security.jwt.JwtAuthEntryPoint;
 import com.gates.standstrong.domain.security.jwt.JwtAuthTokenFilter;
