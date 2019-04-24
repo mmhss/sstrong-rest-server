@@ -21,7 +21,7 @@ public class Post extends BaseEntity {
     @Column(name = "thread_id")
     private int threadId;
 
-    @Column
+    @Column(name="direction")
     private String direction;
 
     @ManyToOne(optional = true)
