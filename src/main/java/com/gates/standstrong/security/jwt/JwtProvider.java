@@ -25,10 +25,12 @@ public class JwtProvider {
 
         UserPrinciple userPrincipal = (UserPrinciple) authentication.getPrincipal();
 
+        //TODO: uncomment .setExpiration for production.
+
         return Jwts.builder()
 		                .setSubject((userPrincipal.getUsername()))
 		                .setIssuedAt(new Date())
-		                .setExpiration(new Date((new Date()).getTime() + jwtExpiration*1000))
+//		                .setExpiration(new Date((new Date()).getTime() + jwtExpiration*1000))
 		                .signWith(SignatureAlgorithm.HS512, jwtSecret)
 		                .compact();
     }
