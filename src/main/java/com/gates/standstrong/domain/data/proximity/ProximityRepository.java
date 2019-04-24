@@ -148,6 +148,7 @@ interface ProximityRepository extends BaseRepository<Proximity> {
     @Query(value = "SELECT DISTINCT DATE(capture_date) AS chartDay" +
             "       FROM proximity" +
             "       INNER JOIN mother on proximity.mother_id = mother.id" +
-            "       WHERE mother.id = :motherId", nativeQuery = true)
+            "       WHERE mother.id = :motherId" +
+            "       ORDER BY chartDay", nativeQuery = true)
     List<Date> getDates(@Param("motherId") Long motherId);
 }
