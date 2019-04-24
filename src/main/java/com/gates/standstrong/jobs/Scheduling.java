@@ -50,7 +50,7 @@ public class Scheduling {
     public void run(){
 
         log.info("Running social security award");
-        generateSocialSecurityAwards();
+        generateSocialSupportAwards();
 
         log.info("Running movement award");
         generateMovementAwards();
@@ -78,9 +78,9 @@ public class Scheduling {
 
             Award awardDb = awardService.getTopAward(mother.getId(), AwardConstants.AWARD_ROUTINE);
             int nextLevel = AwardConstants.AWARD_LEVEL_ONE;
-
+            int savedLevel = 0;
             if (awardDb != null) {
-                nextLevel = awardDb.getAwardLevel() + 1;
+                savedLevel = awardDb.getAwardLevel();
             }
 
             log.info("Generating Routine Awards for mom {}", mother.getIdentificationNumber());
@@ -125,12 +125,14 @@ public class Scheduling {
 
                     log.info("Routine Level 1 award achieved.");
 
-                    if(nextLevel == AwardConstants.AWARD_LEVEL_ONE ){
+                    if(nextLevel > savedLevel ){
 
                         Award award = awardService.buildAward(mother, AwardConstants.AWARD_ROUTINE, AwardConstants.AWARD_LEVEL_ONE,proximityDates.get(i).toLocalDate());
                         awardService.save(award);
 
                         log.info("Saved");
+
+                        savedLevel++;
 
                     }
                     nextLevel = AwardConstants.AWARD_LEVEL_TWO;
@@ -141,12 +143,14 @@ public class Scheduling {
                 if(StringUtils.isMatch( charts[i-1], charts[i], 80) && consecutiveValue == 1 ){
 
                     log.info("Routine Level 2 award achieved.");
-                    if(nextLevel == AwardConstants.AWARD_LEVEL_TWO ){
+                    if(nextLevel > savedLevel){
 
                         Award award = awardService.buildAward(mother, AwardConstants.AWARD_ROUTINE, AwardConstants.AWARD_LEVEL_TWO,proximityDates.get(i).toLocalDate());
                         awardService.save(award);
 
                         log.info("Saved");
+
+                        savedLevel++;
 
                     }
                     nextLevel = AwardConstants.AWARD_LEVEL_THREE;
@@ -158,16 +162,19 @@ public class Scheduling {
 
                     log.info("Routine Level 3 award achieved.");
 
-                    if(nextLevel == AwardConstants.AWARD_LEVEL_THREE ){
+                    if(nextLevel > savedLevel){
                         Award award = awardService.buildAward(mother, AwardConstants.AWARD_ROUTINE, AwardConstants.AWARD_LEVEL_THREE,proximityDates.get(i).toLocalDate());
                         awardService.save(award);
 
                         log.info("Saved");
 
+                        savedLevel++;
+
                     }
                     break;
                 }
-                consecutiveValue=0;
+                consecutiveValue = 0;
+                nextLevel = AwardConstants.AWARD_LEVEL_ONE;
             }
         }
     }
@@ -228,9 +235,9 @@ public class Scheduling {
 
             Award awardDb = awardService.getTopAward(mother.getId(), AwardConstants.AWARD_SELF_CARE);
             int nextLevel = AwardConstants.AWARD_LEVEL_ONE;
-
+            int savedLevel = 0;
             if (awardDb != null) {
-                nextLevel = awardDb.getAwardLevel() + 1;
+                savedLevel = awardDb.getAwardLevel();
             }
 
             log.info("Generating Self Care Awards for mom {}", mother.getIdentificationNumber());
@@ -245,11 +252,12 @@ public class Scheduling {
 
                     log.info("Self Care Level 1 award achieved.");
 
-                    if(nextLevel == AwardConstants.AWARD_LEVEL_ONE){
+                    if(nextLevel>savedLevel){
                         Award award = awardService.buildAward(mother, AwardConstants.AWARD_SELF_CARE, AwardConstants.AWARD_LEVEL_ONE, selfCare.getChartDay().toLocalDate());
                         awardService.save(award);
 
                         log.info("Saved");
+                        savedLevel++;
                     }
                     nextLevel = AwardConstants.AWARD_LEVEL_TWO;
                     previousDay = selfCare.getChartDay();
@@ -260,11 +268,12 @@ public class Scheduling {
                 if(previousDay!=null && DateUtils.addDays(previousDay, 1).equals(selfCare.getChartDay()) && consecutiveValue == 1 ){
 
                     log.info("Self Care Level 2 award achieved.");
-                    if(nextLevel == AwardConstants.AWARD_LEVEL_TWO){
+                    if(nextLevel > savedLevel){
                         Award award = awardService.buildAward(mother, AwardConstants.AWARD_SELF_CARE, AwardConstants.AWARD_LEVEL_TWO, selfCare.getChartDay().toLocalDate());
                         awardService.save(award);
 
                         log.info("Saved");
+                        savedLevel++;
 
                     }
                     nextLevel = AwardConstants.AWARD_LEVEL_THREE;
@@ -282,10 +291,13 @@ public class Scheduling {
 
                         log.info("Saved");
 
+                        savedLevel++;
+
                     }
                     break;
                 }
 
+                nextLevel=AwardConstants.AWARD_LEVEL_ONE;
                 previousDay=null;
                 consecutiveValue=0;
 
@@ -304,8 +316,10 @@ public class Scheduling {
 
             Award awardDb = awardService.getTopAward(mother.getId(), AwardConstants.AWARD_MOVEMENT);
             int nextLevel = AwardConstants.AWARD_LEVEL_ONE;
+            int savedLevel = 0;
+
             if (awardDb != null) {
-                nextLevel = awardDb.getAwardLevel() + 1;
+                savedLevel = awardDb.getAwardLevel();
             }
 
             log.info("Generating Movement Awards for mom {}", mother.getIdentificationNumber());
@@ -322,12 +336,14 @@ public class Scheduling {
 
                     log.info("Movement Level 1 award achieved.");
 
-                    if(nextLevel == AwardConstants.AWARD_LEVEL_ONE){
+                    if(nextLevel > savedLevel){
 
                         Award award = awardService.buildAward(mother, AwardConstants.AWARD_MOVEMENT, AwardConstants.AWARD_LEVEL_ONE, movement.getCaptureDate().toLocalDate());
                         awardService.save(award);
 
                         log.info("Saved");
+
+                        savedLevel++;
 
                     }
                     nextLevel = AwardConstants.AWARD_LEVEL_TWO;
@@ -339,12 +355,14 @@ public class Scheduling {
                 if(previousDay!=null && DateUtils.addDays(previousDay, 1).equals(movement.getCaptureDate()) && movement.getMovementCount()>=2 && consecutiveValue ==1 ){
 
                     log.info("Movement Level 2 award achieved.");
-                    if(nextLevel == AwardConstants.AWARD_LEVEL_TWO){
+                    if(nextLevel > savedLevel){
 
                         Award award = awardService.buildAward(mother, AwardConstants.AWARD_MOVEMENT, AwardConstants.AWARD_LEVEL_TWO, movement.getCaptureDate().toLocalDate());
                         awardService.save(award);
 
                         log.info("Saved");
+
+                        savedLevel++;
 
                     }
                     nextLevel = AwardConstants.AWARD_LEVEL_THREE;
@@ -356,25 +374,27 @@ public class Scheduling {
                 if(previousDay!=null && DateUtils.addDays(previousDay, 1).equals(movement.getCaptureDate()) && movement.getMovementCount()>=3 && consecutiveValue ==2 ){
 
                     log.info("Movement Level 3 award achieved.");
-                    if(nextLevel == AwardConstants.AWARD_LEVEL_THREE){
+                    if(nextLevel > savedLevel){
 
                         Award award = awardService.buildAward(mother, AwardConstants.AWARD_MOVEMENT, AwardConstants.AWARD_LEVEL_THREE, movement.getCaptureDate().toLocalDate());
                         awardService.save(award);
 
                         log.info("Saved");
 
+                        savedLevel++;
+
                     }
                     break;
                 }
                 previousDay = null;
                 consecutiveValue=0;
-
+                nextLevel = AwardConstants.AWARD_LEVEL_ONE;
             }
         }
     }
 
 
-    private void generateSocialSecurityAwards(){
+    private void generateSocialSupportAwards(){
 
         for(Mother mother:motherService.findAll()){
 
@@ -385,8 +405,10 @@ public class Scheduling {
 
             Award awardDb = awardService.getTopAward(mother.getId(), AwardConstants.AWARD_SOCIAL_SUPPORT);
             int nextLevel = AwardConstants.AWARD_LEVEL_ONE;
+            int savedLevel = 0;
             if (awardDb != null) {
-                nextLevel = awardDb.getAwardLevel() + 1;
+                log.info("Social Support Awards for mom {} already reached to level {}", mother.getIdentificationNumber(), awardDb.getAwardLevel());
+                savedLevel = awardDb.getAwardLevel();
             }
 
 
@@ -403,12 +425,14 @@ public class Scheduling {
 
                     log.info("Social Support Level 1 award achieved.");
 
-                    if(nextLevel == AwardConstants.AWARD_LEVEL_ONE){
+                    if( nextLevel > savedLevel ){
 
                         Award award = awardService.buildAward(mother, AwardConstants.AWARD_SOCIAL_SUPPORT, AwardConstants.AWARD_LEVEL_ONE, speech.getCaptureDate().toLocalDate());
                         awardService.save(award);
 
                         log.info("Saved");
+
+                        savedLevel++;
 
                     }
                     nextLevel = AwardConstants.AWARD_LEVEL_TWO;
@@ -420,12 +444,14 @@ public class Scheduling {
                 if(previousDay!=null && DateUtils.addDays(previousDay, 1).equals(speech.getCaptureDate()) && speech.getSpeechCount()>=4 && consecutiveValue ==1 ){
 
                     log.info("Social Support Level 2 award achieved.");
-                    if(nextLevel == AwardConstants.AWARD_LEVEL_TWO){
+                    if(nextLevel > savedLevel){
 
                         Award award = awardService.buildAward(mother, AwardConstants.AWARD_SOCIAL_SUPPORT, AwardConstants.AWARD_LEVEL_TWO, speech.getCaptureDate().toLocalDate());
                         awardService.save(award);
 
                         log.info("Saved");
+
+                        savedLevel++;
 
                     }
                     nextLevel = AwardConstants.AWARD_LEVEL_THREE;
@@ -437,18 +463,21 @@ public class Scheduling {
                 if(previousDay!=null && DateUtils.addDays(previousDay, 1).equals(speech.getCaptureDate()) && speech.getSpeechCount()>=6 && consecutiveValue ==2 ){
 
                     log.info("Social Support Level 3 award achieved.");
-                    if(nextLevel == AwardConstants.AWARD_LEVEL_THREE){
+                    if( nextLevel > savedLevel ){
 
                         Award award = awardService.buildAward(mother, AwardConstants.AWARD_SOCIAL_SUPPORT, AwardConstants.AWARD_LEVEL_THREE, speech.getCaptureDate().toLocalDate());
                         awardService.save(award);
 
                         log.info("Saved");
 
+                        savedLevel++;
+
                     }
                     break;
                 }
                 previousDay = null;
                 consecutiveValue=0;
+                nextLevel = AwardConstants.AWARD_LEVEL_ONE;
             }
         }
 
