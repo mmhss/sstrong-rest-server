@@ -46,7 +46,10 @@ public class Scheduling {
         this.proximityService = proximityService;
     }
 
-    @Scheduled(cron="0 8 * * * *")
+    /*
+        Running the job at 1 AM UTC
+     */
+    @Scheduled(cron="0 * 1 * * *")
     public void run(){
 
         log.info("Running social security award");
