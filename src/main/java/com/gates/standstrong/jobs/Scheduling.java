@@ -47,9 +47,9 @@ public class Scheduling {
     }
 
     /*
-        Running the job at 1 AM UTC
+        Running the job at 2 AM UTC
      */
-    @Scheduled(cron="0 * 1 * * *")
+    @Scheduled(cron="0 0 2 * * *")
     public void run(){
 
         log.info("Running social security award");
