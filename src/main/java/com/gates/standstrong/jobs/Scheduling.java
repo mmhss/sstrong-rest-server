@@ -494,6 +494,9 @@ public class Scheduling {
      */
     @Scheduled(cron="0 0 4-17 * * *")
     public void runMessagingJob(){
+
+        log.info("Running messaging service");
+
         try {
             webhookService.setupWebHook();
             webhookService.sendMessages();
