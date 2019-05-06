@@ -72,9 +72,6 @@ public class Scheduling {
         log.info("Running Bonus award");
         generateBonusAwards();
 
-        log.info("Running Messaging service");
-        runMessagingJob();
-
     }
 
     private void generateRoutineAwards() {
@@ -492,6 +489,10 @@ public class Scheduling {
         }
     }
 
+    /*
+        Running messaging service from 9AM to 8PM UTC.
+     */
+    @Scheduled(cron="0 0 4-17 * * *")
     public void runMessagingJob(){
         try {
             webhookService.setupWebHook();
