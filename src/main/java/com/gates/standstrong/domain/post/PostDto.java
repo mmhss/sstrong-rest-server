@@ -18,6 +18,7 @@ public class PostDto extends BaseDto {
     private int threadId;
     private String direction;
     private String status;
+    private String media;
 
     private BaseDto mother;
 }
