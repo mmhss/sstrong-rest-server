@@ -14,11 +14,13 @@ import com.gates.standstrong.domain.mother.Mother;
 import com.gates.standstrong.domain.mother.MotherService;
 import com.gates.standstrong.utils.DateUtils;
 import com.gates.standstrong.utils.StringUtils;
+import com.gates.standstrong.viber.WebhookService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.net.MalformedURLException;
 import java.sql.Date;
 import java.util.Arrays;
 import java.util.List;
@@ -37,13 +39,16 @@ public class Scheduling {
 
     private ProximityService proximityService;
 
+    private WebhookService webhookService;
+
     @Inject
-    public Scheduling(MotherService motherService, AudioService audioService, AwardService awardService, ActivityService activityService, ProximityService proximityService) {
+    public Scheduling(MotherService motherService, AudioService audioService, AwardService awardService, ActivityService activityService, ProximityService proximityService, WebhookService webhookService) {
         this.motherService = motherService;
         this.audioService = audioService;
         this.awardService = awardService;
         this.activityService = activityService;
         this.proximityService = proximityService;
+        this.webhookService = webhookService;
     }
 
     /*
@@ -67,6 +72,8 @@ public class Scheduling {
         log.info("Running Bonus award");
         generateBonusAwards();
 
+        log.info("Running Messaging service");
+        runMessagingJob();
 
     }
 
@@ -483,7 +490,15 @@ public class Scheduling {
                 nextLevel = AwardConstants.AWARD_LEVEL_ONE;
             }
         }
+    }
 
+    public void runMessagingJob(){
+        try {
+            webhookService.setupWebHook();
+            webhookService.sendMessages();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
 
     }
 }
