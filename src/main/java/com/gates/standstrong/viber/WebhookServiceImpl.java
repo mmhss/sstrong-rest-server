@@ -2,6 +2,7 @@ package com.gates.standstrong.viber;
 
 import com.gates.standstrong.domain.post.Post;
 import com.gates.standstrong.domain.post.PostService;
+import com.gates.standstrong.utils.JSONUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -10,7 +11,13 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
 import java.net.MalformedURLException;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.*;
 
 
 @Service
@@ -60,14 +67,14 @@ public class WebhookServiceImpl implements WebhookService{
                     log.info("Message delivered.");
                 }
 
-            } catch (MalformedURLException e) {
+            } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
     }
 
     @Override
-    public boolean sendMessage(Post post) throws MalformedURLException {
+    public boolean sendMessage(Post post) throws ParseException {
 
         if(post.getMother()==null){
             log.error("Mother not set for the post", post.getId());
@@ -84,30 +91,39 @@ public class WebhookServiceImpl implements WebhookService{
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 
-        String input = "{\n" +
-                "\"auth_token\": \""+WebhookConstants.VIBER_AUTH_TOKEN+"\",\n" +
-                "\"receiver\": \""+post.getMother().getViberId()+"\",\n" +
-                "\"type\": \"text\",\n" +
-                "\"text\": \""+post.getMessage()+"\",\n";
+        JSONObject payload = new JSONObject();
+        payload.put("auth_token", WebhookConstants.VIBER_AUTH_TOKEN);
+        payload.put("receiver", post.getMother().getViberId() );
+        payload.put("text", post.getMessage());
 
-        if(post.getMedia()!=null){
-            input = input + "\"media\": \""+post.getMedia()+"\",\n";
+        if(post.getMedia()!=null) {
+            payload.put("type", "picture");
+            payload.put("media", post.getMedia());
+        }else{
+            payload.put("type", "text");
         }
 
-        input = input +
-                "\"sender\":{\n" +
-                "      \"name\":\"StandStrong\",\n" +
-                "   }\n" +
-                "}";
+        Map m = new LinkedHashMap(1);
+        m.put("name", "StandStrong");
+
+        // putting address to JSONObject
+        payload.put("sender", m);
+
+
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> entity = new HttpEntity<String>(input, headers);
+        HttpEntity<String> entity = new HttpEntity<String>(payload.toJSONString(), headers);
 
         ResponseEntity<String> response = restTemplate
                 .exchange(WebhookConstants.URL_VIBER_WEB_SEND_MESSAGE, HttpMethod.POST, entity, String.class);
 
-        if(response.getStatusCodeValue()==200){
+        log.info(response.toString());
+
+
+        String status = JSONUtils.parse(response.getBody(), "status");
+
+        if(response.getStatusCodeValue()==200 && status.equals("0")){
             return true;
         }
 
