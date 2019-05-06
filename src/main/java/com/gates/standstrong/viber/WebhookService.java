@@ -8,6 +8,6 @@ import java.net.MalformedURLException;
 public interface WebhookService {
 
     void setupWebHook() throws MalformedURLException;
-    boolean sendMessage(Post post) throws MalformedURLException, ParseException;
+    boolean sendMessage(Post post) throws ParseException;
     void sendMessages();
 }
