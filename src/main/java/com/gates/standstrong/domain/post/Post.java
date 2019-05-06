@@ -33,4 +33,7 @@ public class Post extends BaseEntity {
 
     @Column(name="status")
     private String status;
+
+    @Column(name="media")
+    private String media;
 }
