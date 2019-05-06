@@ -12,6 +12,9 @@ import java.time.LocalDateTime;
 @Table(name="post")
 public class Post extends BaseEntity {
 
+    public final static String STATUS_PENDING = "PENDING";
+    public final static String STATUS_DELIVERED = "DELIVERED";
+
     @Column
     private String message;
 
@@ -27,4 +30,7 @@ public class Post extends BaseEntity {
     @ManyToOne(optional = true)
     @JoinColumn(name = "mother_id")
     private Mother mother;
+
+    @Column(name="status")
+    private String status;
 }

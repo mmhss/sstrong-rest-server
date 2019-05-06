@@ -44,6 +44,9 @@ public class Mother extends BaseEntity {
     @Column(name="status")
     private String status;
 
+    @Column(name="viber_id")
+    private String viberId;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "project_id")
     private Project project;
