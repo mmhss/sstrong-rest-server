@@ -88,7 +88,13 @@ public class WebhookServiceImpl implements WebhookService{
                 "\"auth_token\": \""+WebhookConstants.VIBER_AUTH_TOKEN+"\",\n" +
                 "\"receiver\": \""+post.getMother().getViberId()+"\",\n" +
                 "\"type\": \"text\",\n" +
-                "\"text\": \""+post.getMessage()+"\",\n" +
+                "\"text\": \""+post.getMessage()+"\",\n";
+
+        if(post.getMedia()!=null){
+            input = input + "\"media\": \""+post.getMedia()+"\",\n";
+        }
+
+        input = input +
                 "\"sender\":{\n" +
                 "      \"name\":\"StandStrong\",\n" +
                 "   }\n" +
