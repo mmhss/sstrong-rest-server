@@ -6,4 +6,5 @@ public interface MotherService extends BaseService<Mother> {
 
     Long getMotherId(String filename, String delimiter);
 
+    Mother findMother(String viberId);
 }

@@ -7,4 +7,6 @@ import java.util.List;
 public interface PostService extends BaseService<Post> {
 
     List<Post> getPendingPostsToMothers();
+
+    Post buildPost(String callback);
 }

@@ -29,4 +29,12 @@ public class MotherServiceImpl extends BaseServiceImpl<Mother> implements Mother
 
         return null;
     }
+
+    @Override
+    public Mother findMother(String viberId) {
+        return motherRepository.findMother(viberId);
+    }
+
+
 }
+
