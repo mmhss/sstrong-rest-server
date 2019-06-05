@@ -14,7 +14,6 @@ class QueryUrlPredicate<T extends EntityPathBase> {
     private static final String ORDER_BY_ASCENDING = "asc";
     private static final String ORDER_BY_DESCENDING = "desc";
 
-
     private final Class<T> classType;
     private final PathMetadata metaData;
 

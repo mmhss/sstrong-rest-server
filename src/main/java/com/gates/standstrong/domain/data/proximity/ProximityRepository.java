@@ -74,8 +74,9 @@ interface ProximityRepository extends BaseRepository<Proximity> {
             " WHERE proximity.id > :pId" +
             "       AND event='Visibility' AND value=1" +
             "  GROUP BY chartDay, chartHour, mother_id" +
-            "  ORDER BY proximityId asc", nativeQuery = true)
-    List<ProximityChart> getProximityCharts(@Param("pId") Long proximitySyncId);
+            "  ORDER BY proximityId asc" +
+            "  LIMIT :limit", nativeQuery = true)
+    List<ProximityChart> getProximityCharts(@Param("pId") Long proximitySyncId, @Param("limit") Long limit);
 
     @Query(value="SELECT DISTINCT t1.chartDay AS chartDay, count(t1.chartDay) AS hourCount" +
             " FROM (" +

@@ -1,8 +1,11 @@
 package com.gates.standstrong.base;
 
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,6 +42,10 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
         return repository.findAll(exp, orderBy);
     }
 
+    @Override
+    public Page<T> findAll(Predicate predicate, Pageable pageable) {
+        return repository.findAll(predicate, pageable);
+    }
 
     @Override
     public Optional<T> findOne(Long id) {
