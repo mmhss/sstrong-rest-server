@@ -1,8 +1,12 @@
 package com.gates.standstrong.base.search;
 
+import com.querydsl.core.QueryModifiers;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.EntityPathBase;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,5 +60,21 @@ public class QueryUrlPredicatesBuilder {
         }
         return orderSpecifiers;
     }
+
+    public static Pageable toPageable(List<OrderSpecifier> orderSpecifiers, QueryModifiers page) {
+        List<Sort.Order>  orders = new ArrayList<>();
+
+        for(OrderSpecifier orderSpecifier : orderSpecifiers) {
+            String expressionPath = orderSpecifier.getTarget().toString();
+            String[] paths = expressionPath.split("\\.");
+            String property = paths[paths.length - 1];
+            orders.add(new Sort.Order(Sort.Direction.valueOf(orderSpecifier.getOrder().toString()), property));
+        }
+
+        return PageRequest.of(page.getOffset().intValue(), page.getLimit().intValue(), Sort.by(orders));
+    }
+
+
+
 
 }

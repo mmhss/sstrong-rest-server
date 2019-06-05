@@ -2,13 +2,20 @@ package com.gates.standstrong.base;
 
 import com.gates.standstrong.base.mapper.BaseMapper;
 import com.gates.standstrong.base.search.QueryUrlPredicatesBuilder;
+import com.querydsl.core.QueryModifiers;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.PageFormat;
+import java.awt.print.Pageable;
+import java.awt.print.Printable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -73,6 +80,37 @@ public class BaseResource<T extends BaseEntity, D extends BaseDto> {
         BooleanExpression exp = builderSearch.buildSearch();
         List<OrderSpecifier> orderBy = builderSort.buildSort();
         Iterable<T> results = service.findAll(exp, orderBy.toArray(new OrderSpecifier[orderBy.size()]));
+        List<D> dtos = mapper.toDto(results);
+        return ResponseEntity.ok().body(dtos);
+    }
+
+    @GetMapping("/find")
+    public ResponseEntity<Iterable<D>> find(@RequestParam(required = false) String search, @RequestParam(required = false) String sortBy, @RequestParam Long offset, @RequestParam Long limit) {
+
+        QueryUrlPredicatesBuilder builderSearch = QueryUrlPredicatesBuilder.forClass(classType, entityPathBase);
+
+        if (search != null) {
+            Matcher matcherSearch = queryUrlSearchPattern.matcher(search + ",");
+            while (matcherSearch.find()) {
+                builderSearch.with(matcherSearch.group(1), matcherSearch.group(2), matcherSearch.group(3));
+            }
+        }
+
+        BooleanExpression exp = builderSearch.buildSearch();
+
+        if(sortBy!=null){
+            Matcher matcherSort = queryUrlSearchPattern.matcher(sortBy + ",");
+            while (matcherSort.find()) {
+                builderSearch.with(matcherSort.group(1), matcherSort.group(2), matcherSort.group(3));
+            }
+        }
+
+        List<OrderSpecifier> orderBy = builderSearch.buildSort();
+
+        QueryModifiers page = new QueryModifiers(limit, offset);
+
+        Iterable<T> results = service.findAll(exp, QueryUrlPredicatesBuilder.toPageable(orderBy, page));
+
         List<D> dtos = mapper.toDto(results);
         return ResponseEntity.ok().body(dtos);
     }
