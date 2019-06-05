@@ -27,8 +27,8 @@ public class ProximityServiceImpl extends BaseServiceImpl<Proximity> implements 
     }
 
     @Override
-    public List<ProximityChart> getProximityCharts(Long proximitySyncId) {
-        return proximityRepository.getProximityCharts(proximitySyncId);
+    public List<ProximityChart> getProximityCharts(Long proximitySyncId, Long limit) {
+        return proximityRepository.getProximityCharts(proximitySyncId, limit);
     }
 
     @Override
