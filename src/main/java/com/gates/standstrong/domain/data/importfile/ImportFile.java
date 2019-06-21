@@ -1,11 +1,10 @@
 package com.gates.standstrong.domain.data.importfile;
 
 import com.gates.standstrong.base.BaseEntity;
+import com.gates.standstrong.domain.mother.Mother;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
@@ -19,9 +18,13 @@ public class ImportFile extends BaseEntity {
     @Column(name = "status")
     private String status;
 
-    @Column(name = "load_date_time")
-    private LocalDateTime loadDateTime;
+    @Column(name = "import_date")
+    private LocalDateTime importDate;
 
     @Column(name = "fileType")
     private String fileType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mother_id")
+    private Mother mother;
 }
