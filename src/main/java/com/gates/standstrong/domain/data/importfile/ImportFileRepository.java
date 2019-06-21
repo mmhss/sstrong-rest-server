@@ -8,7 +8,7 @@ import java.util.List;
 
 interface ImportFileRepository extends BaseRepository<ImportFile> {
 
-    @Query(value = "SELECT id FROM ImportFile WHERE ImportFile.mother_id = :motherId", nativeQuery = true)
+    @Query(value = "SELECT i FROM ImportFile i WHERE i.mother.id = :motherId")
     List<ImportFile> getImportFilesByMotherId(@Param("motherId") Long motherId);
 
 }
